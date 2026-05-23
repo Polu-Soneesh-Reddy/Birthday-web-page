@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Birthday!</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&family=Caveat:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --gold:#f5c842;--pink:#ff6b9d;--lavender:#c084fc;--mint:#34d399;--sky:#60a5fa;
+  --deep:#0d0a1a;--deep2:#150f2a;--card:#1a1230;--glass:rgba(255,255,255,0.07);
+  --border:rgba(255,255,255,0.12);
+}
+html{scroll-behavior:smooth}
+body{background:var(--deep);color:#fff;font-family:'DM Sans',sans-serif;overflow-x:hidden;cursor:none}
+.cursor{position:fixed;width:20px;height:20px;background:var(--gold);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:transform 0.1s,opacity 0.3s;mix-blend-mode:difference}
+.cursor-ring{position:fixed;width:44px;height:44px;border:1.5px solid var(--pink);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:transform 0.15s ease-out,width 0.2s,height 0.2s}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;justify-content:space-between;align-items:center;background:rgba(13,10,26,0.7);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.nav-logo{font-family:'Caveat',cursive;font-size:1.4rem;color:var(--gold)}
+.nav-links{display:flex;gap:1.5rem}
+.nav-links a{color:rgba(255,255,255,0.7);text-decoration:none;font-size:0.85rem;letter-spacing:0.05em;transition:color 0.2s}
+.nav-links a:hover{color:var(--gold)}
+
+/* HERO */
+#hero{height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;position:relative;overflow:hidden}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 40%,rgba(192,132,252,0.25) 0%,transparent 60%),radial-gradient(ellipse 60% 40% at 20% 80%,rgba(255,107,157,0.2) 0%,transparent 50%),radial-gradient(ellipse 50% 50% at 80% 20%,rgba(96,165,250,0.15) 0%,transparent 50%)}
+.particles-canvas{position:absolute;inset:0;pointer-events:none}
+.hero-eyebrow{font-size:0.85rem;letter-spacing:0.3em;color:var(--gold);text-transform:uppercase;margin-bottom:1.5rem;opacity:0;animation:fadeUp 1s 0.5s forwards}
+.hero-title{font-family:'Playfair Display',serif;font-size:clamp(3rem,8vw,6.5rem);line-height:1.1;margin-bottom:1.5rem;opacity:0;animation:fadeUp 1s 0.8s forwards}
+.hero-title span{background:linear-gradient(135deg,var(--gold),var(--pink),var(--lavender));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{font-size:1.1rem;color:rgba(255,255,255,0.65);margin-bottom:2.5rem;font-style:italic;opacity:0;animation:fadeUp 1s 1.1s forwards}
+.btn-primary{display:inline-flex;align-items:center;gap:0.5rem;padding:0.9rem 2.2rem;border-radius:50px;background:linear-gradient(135deg,var(--gold),var(--pink));color:#0d0a1a;font-weight:600;font-size:0.95rem;cursor:pointer;border:none;transition:transform 0.2s,box-shadow 0.2s;opacity:0;animation:fadeUp 1s 1.4s forwards;letter-spacing:0.02em}
+.btn-primary:hover{transform:translateY(-2px) scale(1.03);box-shadow:0 0 40px rgba(245,200,66,0.5)}
+.scroll-indicator{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:0.5rem;opacity:0;animation:fadeUp 1s 2s forwards}
+.scroll-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);animation:bounce 1.5s infinite}
+.scroll-dot:nth-child(2){animation-delay:0.2s}
+.scroll-dot:nth-child(3){animation-delay:0.4s}
+
+/* CONFETTI */
+.confetti-piece{position:absolute;width:8px;height:8px;opacity:0;pointer-events:none;animation:confettiFall 4s ease-in forwards}
+@keyframes confettiFall{0%{opacity:1;transform:translateY(-20px) rotate(0deg)}100%{opacity:0;transform:translateY(100vh) rotate(720deg)}}
+
+/* SECTIONS */
+section{padding:6rem 2rem;max-width:1100px;margin:0 auto;position:relative}
+.section-label{font-size:0.75rem;letter-spacing:0.3em;color:var(--gold);text-transform:uppercase;margin-bottom:0.75rem}
+.section-title{font-family:'Playfair Display',serif;font-size:clamp(2rem,5vw,3.5rem);margin-bottom:1rem;line-height:1.2}
+.section-title em{font-style:italic;color:var(--pink)}
+.section-divider{width:60px;height:2px;background:linear-gradient(90deg,var(--gold),var(--pink));border-radius:2px;margin-bottom:3rem}
+
+/* MEMORIES GALLERY */
+.gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.5rem}
+.photo-card{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;transition:transform 0.3s,box-shadow 0.3s;cursor:pointer;position:relative}
+.photo-card:hover{transform:translateY(-8px) rotate(-1deg);box-shadow:0 20px 60px rgba(245,200,66,0.2)}
+.photo-placeholder{height:200px;background:linear-gradient(135deg,rgba(192,132,252,0.3),rgba(255,107,157,0.2));display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.5rem;font-size:2rem;position:relative;overflow:hidden}
+.photo-placeholder::after{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='40' height='40' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='20' cy='20' r='1' fill='white' opacity='0.15'/%3E%3C/svg%3E")}
+.photo-card img{height:200px;width:100%;object-fit:cover;display:block}
+.photo-caption{padding:1rem;font-family:'Caveat',cursive;font-size:1.05rem;color:rgba(255,255,255,0.85);line-height:1.4}
+.photo-year{font-size:0.75rem;color:var(--gold);margin-bottom:0.25rem;font-family:'DM Sans',sans-serif;letter-spacing:0.1em}
+
+/* TIMELINE */
+#timeline{padding:6rem 2rem;max-width:900px;margin:0 auto}
+.timeline-line{position:absolute;left:50%;transform:translateX(-50%);top:0;bottom:0;width:2px;background:linear-gradient(180deg,var(--gold),var(--pink),var(--lavender));border-radius:2px}
+.timeline-wrap{position:relative;padding:2rem 0}
+.timeline-item{display:flex;margin-bottom:4rem;position:relative;align-items:flex-start}
+.timeline-item:nth-child(odd){flex-direction:row-reverse}
+.timeline-item:nth-child(odd) .timeline-card{margin-right:calc(50% + 2rem);margin-left:0}
+.timeline-item:nth-child(even) .timeline-card{margin-left:calc(50% + 2rem)}
+.timeline-dot{position:absolute;left:50%;transform:translateX(-50%);width:16px;height:16px;border-radius:50%;background:var(--gold);border:3px solid var(--deep);box-shadow:0 0 20px rgba(245,200,66,0.6);z-index:2;flex-shrink:0;top:1.2rem}
+.timeline-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.5rem;transition:transform 0.3s;flex:1;max-width:calc(50% - 3rem)}
+.timeline-card:hover{transform:scale(1.02)}
+.timeline-year{font-size:0.75rem;color:var(--gold);letter-spacing:0.15em;font-weight:500;margin-bottom:0.3rem}
+.timeline-card h3{font-family:'Playfair Display',serif;font-size:1.2rem;margin-bottom:0.4rem}
+.timeline-card p{font-size:0.9rem;color:rgba(255,255,255,0.6);line-height:1.6}
+.timeline-emoji{font-size:1.8rem;margin-bottom:0.5rem}
+
+/* QUIZ */
+#quiz{background:linear-gradient(135deg,rgba(192,132,252,0.08),rgba(255,107,157,0.05));border-radius:32px;padding:4rem 3rem;margin:0 2rem}
+.quiz-q{font-family:'Playfair Display',serif;font-size:1.5rem;margin-bottom:1.5rem;line-height:1.4}
+.quiz-opts{display:flex;flex-direction:column;gap:0.75rem}
+.quiz-opt{padding:1rem 1.5rem;border-radius:12px;border:1px solid var(--border);background:var(--glass);cursor:pointer;text-align:left;font-size:0.95rem;color:#fff;transition:all 0.2s}
+.quiz-opt:hover{border-color:var(--lavender);background:rgba(192,132,252,0.15);transform:translateX(6px)}
+.quiz-opt.correct{border-color:var(--mint);background:rgba(52,211,153,0.15)}
+.quiz-opt.wrong{border-color:var(--pink);background:rgba(255,107,157,0.15)}
+.quiz-score{display:flex;align-items:center;gap:1rem;margin-bottom:2rem}
+.score-bar{flex:1;height:8px;background:rgba(255,255,255,0.1);border-radius:4px;overflow:hidden}
+.score-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--mint));border-radius:4px;transition:width 0.5s}
+.quiz-msg{font-family:'Caveat',cursive;font-size:1.3rem;color:var(--gold);margin-top:1.5rem;min-height:2rem}
+
+/* SPIN WHEEL */
+.wheel-wrap{display:flex;flex-direction:column;align-items:center;gap:2rem}
+.wheel-canvas-wrap{position:relative;width:300px;height:300px}
+.wheel-pointer{position:absolute;top:-10px;left:50%;transform:translateX(-50%);font-size:2rem;z-index:5;filter:drop-shadow(0 0 10px var(--gold))}
+.btn-spin{padding:0.8rem 2rem;border-radius:50px;background:linear-gradient(135deg,var(--gold),var(--pink));color:#0d0a1a;font-weight:700;font-size:1rem;border:none;cursor:pointer;transition:transform 0.2s}
+.btn-spin:hover{transform:scale(1.05)}
+.wheel-result{font-family:'Caveat',cursive;font-size:1.5rem;color:var(--gold);text-align:center;min-height:2.5rem;padding:1rem;background:var(--glass);border-radius:12px;border:1px solid var(--border);max-width:400px;width:100%;transition:all 0.3s}
+
+/* SCRAPBOOK */
+.scrapbook-pages{display:flex;gap:2rem;overflow-x:auto;padding:1rem 0 2rem;scroll-snap-type:x mandatory;scrollbar-width:thin;scrollbar-color:var(--gold) transparent}
+.scrap-page{flex:0 0 280px;scroll-snap-align:start;background:linear-gradient(135deg,#1e1535,#2a1a40);border-radius:20px;border:1px solid var(--border);padding:1.5rem;position:relative;transform:rotate(-2deg);transition:transform 0.3s}
+.scrap-page:nth-child(even){transform:rotate(1.5deg)}
+.scrap-page:hover{transform:rotate(0) scale(1.03)}
+.scrap-sticker{font-size:2rem;margin-bottom:0.75rem}
+.scrap-text{font-family:'Caveat',cursive;font-size:1.1rem;color:rgba(255,255,255,0.85);line-height:1.5}
+.scrap-tape{position:absolute;top:-12px;left:50%;transform:translateX(-50%);width:60px;height:22px;background:rgba(245,200,66,0.35);border-radius:2px}
+
+/* MESSAGE VAULT */
+.vault-wrap{background:var(--card);border-radius:20px;border:1px solid var(--border);padding:2.5rem;text-align:center}
+.vault-icon{font-size:4rem;margin-bottom:1rem}
+.vault-input{width:100%;max-width:400px;padding:0.9rem 1.5rem;border-radius:12px;background:var(--glass);border:1px solid var(--border);color:#fff;font-size:1rem;text-align:center;outline:none;margin:1rem 0;transition:border-color 0.2s}
+.vault-input:focus{border-color:var(--gold)}
+.vault-btn{padding:0.8rem 2rem;border-radius:50px;background:linear-gradient(135deg,var(--lavender),var(--pink));color:#fff;font-weight:600;border:none;cursor:pointer;font-size:0.95rem;transition:transform 0.2s}
+.vault-btn:hover{transform:scale(1.05)}
+.vault-msg{font-family:'Caveat',cursive;font-size:1.3rem;color:var(--mint);margin-top:1.5rem;display:none;padding:1.5rem;background:rgba(52,211,153,0.08);border-radius:12px;border:1px solid rgba(52,211,153,0.2);line-height:1.6}
+.vault-err{color:var(--pink);font-size:0.9rem;margin-top:0.5rem;display:none}
+
+/* COUNTDOWN */
+.countdown-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;max-width:600px;margin:0 auto}
+.cd-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.5rem 1rem;text-align:center}
+.cd-num{font-family:'Playfair Display',serif;font-size:3rem;background:linear-gradient(135deg,var(--gold),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;font-weight:700}
+.cd-label{font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.45);margin-top:0.25rem}
+
+/* COMPLIMENTS */
+.compliment-box{background:linear-gradient(135deg,rgba(245,200,66,0.08),rgba(255,107,157,0.08));border:1px solid var(--border);border-radius:20px;padding:3rem 2rem;text-align:center;position:relative;overflow:hidden}
+.compliment-text{font-family:'Playfair Display',serif;font-size:1.8rem;font-style:italic;color:#fff;margin-bottom:2rem;min-height:3rem;transition:opacity 0.4s}
+.compliment-sub{font-family:'Caveat',cursive;font-size:1.1rem;color:var(--gold);margin-bottom:2rem;min-height:1.8rem}
+.btn-compliment{padding:0.8rem 2rem;border-radius:50px;background:var(--glass);border:1px solid var(--border);color:#fff;cursor:pointer;font-size:0.95rem;transition:all 0.2s}
+.btn-compliment:hover{background:rgba(245,200,66,0.15);border-color:var(--gold)}
+
+/* LETTER */
+#letter{background:linear-gradient(135deg,rgba(96,165,250,0.06),rgba(192,132,252,0.06));border-radius:32px;padding:5rem 3rem;margin:0 2rem}
+.letter-text{font-family:'Caveat',cursive;font-size:1.25rem;line-height:1.9;color:rgba(255,255,255,0.85);max-width:700px;border-left:3px solid var(--gold);padding-left:2rem;margin:0 auto}
+.letter-sig{font-family:'Playfair Display',serif;font-style:italic;font-size:1.4rem;color:var(--gold);margin-top:2rem;text-align:right}
+
+/* FLOATING NOTES */
+.float-note{position:fixed;background:linear-gradient(135deg,rgba(245,200,66,0.95),rgba(255,200,50,0.9));color:#1a1000;border-radius:12px;padding:1rem 1.2rem;font-family:'Caveat',cursive;font-size:1rem;max-width:200px;z-index:50;cursor:pointer;box-shadow:4px 6px 20px rgba(0,0,0,0.4);line-height:1.4;transform:rotate(-3deg);transition:transform 0.2s,opacity 0.3s}
+.float-note:nth-child(even){background:linear-gradient(135deg,rgba(255,107,157,0.95),rgba(255,130,170,0.9));transform:rotate(2deg)}
+.float-note:hover{transform:rotate(0) scale(1.05)}
+.float-note .close-note{position:absolute;top:4px;right:8px;font-size:0.8rem;opacity:0.5;cursor:pointer}
+
+/* FINALE */
+#finale{text-align:center;padding:8rem 2rem;position:relative}
+.finale-title{font-family:'Playfair Display',serif;font-size:clamp(2.5rem,6vw,5rem);background:linear-gradient(135deg,var(--gold),var(--pink),var(--lavender));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:1rem}
+.finale-sub{font-family:'Caveat',cursive;font-size:1.4rem;color:rgba(255,255,255,0.7);margin-bottom:3rem}
+.firework{position:fixed;pointer-events:none;z-index:200}
+
+/* MEMES */
+.meme-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.5rem}
+.meme-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.5rem;text-align:center;transition:transform 0.3s}
+.meme-card:hover{transform:translateY(-6px)}
+.meme-emoji{font-size:3.5rem;margin-bottom:1rem}
+.meme-text{font-family:'Caveat',cursive;font-size:1.1rem;color:rgba(255,255,255,0.85);line-height:1.5}
+
+/* FUNNY PHOTOS */
+.funny-gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:2rem;margin-top:2rem}
+.funny-photo-card{background:#f9f8f4;color:#1e1535;padding:1.2rem 1.2rem 2.2rem;border-radius:2px;box-shadow:0 15px 40px rgba(0,0,0,0.4);transition:transform 0.4s cubic-bezier(0.175,0.885,0.32,1.275),box-shadow 0.4s;cursor:pointer;position:relative}
+.funny-photo-card:nth-child(4n+1){transform:rotate(-3deg)}
+.funny-photo-card:nth-child(4n+2){transform:rotate(2deg)}
+.funny-photo-card:nth-child(4n+3){transform:rotate(-1.5deg)}
+.funny-photo-card:nth-child(4n+4){transform:rotate(3deg)}
+.funny-photo-card:hover{transform:scale(1.04) rotate(0deg) translateY(-5px);box-shadow:0 25px 50px rgba(245,200,66,0.25);z-index:5}
+.funny-photo-card img{width:100%;height:220px;object-fit:cover;border:1px solid rgba(0,0,0,0.08);display:block}
+.funny-photo-caption{font-family:'Caveat',cursive;font-size:1.35rem;text-align:center;margin-top:1.2rem;color:#2e2545;line-height:1.3}
+.funny-photo-tape{position:absolute;top:-14px;left:50%;transform:translateX(-50%) rotate(-4deg);width:75px;height:24px;background:rgba(245,200,66,0.25);backdrop-filter:blur(1px);box-shadow:0 1px 3px rgba(0,0,0,0.05);border-left:1.5px dashed rgba(255,255,255,0.4);border-right:1.5px dashed rgba(255,255,255,0.4)}
+.funny-photo-card:nth-child(even) .funny-photo-tape{transform:translateX(-50%) rotate(3deg);background:rgba(192,132,252,0.25)}
+
+/* HIDDEN SECRETS */
+.secret-btn{display:inline-block;width:20px;height:20px;background:transparent;border:none;cursor:pointer;position:relative}
+.secret-btn::after{content:'✦';color:rgba(255,255,255,0.08);font-size:1rem;transition:color 0.3s}
+.secret-btn:hover::after{color:var(--gold)}
+.secret-popup{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0.8);background:var(--deep2);border:1px solid var(--gold);border-radius:20px;padding:2rem 2.5rem;text-align:center;z-index:500;max-width:380px;width:90%;box-shadow:0 0 80px rgba(245,200,66,0.3);animation:popIn 0.4s cubic-bezier(0.34,1.56,0.64,1) forwards}
+.secret-popup.active{display:block}
+@keyframes popIn{from{transform:translate(-50%,-50%) scale(0.7);opacity:0}to{transform:translate(-50%,-50%) scale(1);opacity:1}}
+.popup-close{position:absolute;top:1rem;right:1rem;background:none;border:none;color:rgba(255,255,255,0.5);font-size:1.2rem;cursor:pointer}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:499;backdrop-filter:blur(4px)}
+.overlay.active{display:block}
+
+/* REASONS */
+.reasons-wrap{text-align:center}
+
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
+@keyframes float{0%,100%{transform:translateY(0px)}50%{transform:translateY(-15px)}}
+@keyframes glow{0%,100%{box-shadow:0 0 20px rgba(245,200,66,0.3)}50%{box-shadow:0 0 40px rgba(245,200,66,0.7)}}
+.float{animation:float 4s ease-in-out infinite}
+.glow{animation:glow 2s ease-in-out infinite}
+
+/* SCROLL REVEAL */
+.reveal{opacity:0;transform:translateY(40px);transition:opacity 0.8s cubic-bezier(0.16,1,0.3,1),transform 0.8s cubic-bezier(0.16,1,0.3,1)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+/* MOBILE */
+@media(max-width:700px){
+  .timeline-item,.timeline-item:nth-child(odd){flex-direction:column;align-items:flex-start;padding-left:2rem}
+  .timeline-card,.timeline-item:nth-child(odd) .timeline-card,.timeline-item:nth-child(even) .timeline-card{margin:0;max-width:100%;margin-top:1rem}
+  .timeline-dot{left:0;transform:none}
+  .timeline-line{left:8px}
+  .countdown-grid{grid-template-columns:repeat(2,1fr)}
+  #quiz,#letter{padding:2rem 1.5rem;margin:0}
+  nav{display:none}
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cur"></div>
+<div class="cursor-ring" id="curRing"></div>
+
+<!-- OVERLAY -->
+<div class="overlay" id="overlay" onclick="closePopup()"></div>
+
+<!-- SECRET POPUP -->
+<div class="secret-popup" id="secretPopup">
+  <button class="popup-close" onclick="closePopup()">✕</button>
+  <div id="popupContent"></div>
+</div>
+
+<!-- FLOATING NOTES -->
+<div class="float-note" id="note1" style="top:20%;right:2%;display:none">
+  <span class="close-note" onclick="this.parentElement.style.display='none'">✕</span>
+  "You make every boring day feel like an adventure!" 🌟
+</div>
+<div class="float-note" id="note2" style="top:55%;left:1%;display:none">
+  <span class="close-note" onclick="this.parentElement.style.display='none'">✕</span>
+  "Your laugh is literally contagious 😂"
+</div>
+
+<nav>
+  <span class="nav-logo">🎂 Birthday Surprise</span>
+  <div class="nav-links">
+    <a href="#gallery">Memories</a>
+    <a href="#timeline">Timeline</a>
+    <a href="#fun">Memes</a>
+    <a href="#funny-photos">Chaos Grid</a>
+    <a href="#quiz">Quiz</a>
+    <a href="#finale">Finale</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div id="hero">
+  <div class="hero-bg"></div>
+  <canvas class="particles-canvas" id="particleCanvas"></canvas>
+
+  <!-- Replace FRIEND_NAME with actual name -->
+  <p class="hero-eyebrow">✦ A special day for a special soul ✦</p>
+  <h1 class="hero-title">Happy Birthday<br><span>Nimisha 🎉</span></h1>
+  <!-- Replace caption below -->
+  <p class="hero-sub">"A journey of memories, laughter, and the best friendship ever."</p>
+  <button class="btn-primary" onclick="document.getElementById('gallery').scrollIntoView({behavior:'smooth'})">
+    ✨ Start the Journey
+  </button>
+
+  <div class="scroll-indicator">
+    <div class="scroll-dot"></div>
+    <div class="scroll-dot"></div>
+    <div class="scroll-dot"></div>
+  </div>
+</div>
+
+<!-- GALLERY -->
+<section id="gallery">
+  <p class="section-label reveal">📸 Memories Gallery</p>
+  <h2 class="section-title reveal">Our <em>Favourite</em> Moments</h2>
+  <div class="section-divider reveal"></div>
+  
+  <div class="gallery-grid">
+    <!-- Put photos in this folder; change src filenames and captions below -->
+    <div class="photo-card reveal" onclick="openSecret('photo1')">
+      <img src="Phone Link/1.jpg" alt="Memory from 2023">
+      <div class="photo-caption">First Photo together(sem 1)<div class="photo-year">2023</div></div>
+    </div>
+    <div class="photo-card reveal" style="transition-delay:0.1s">
+      <img src="Phone Link/2.jpg" alt="Favourite memory">
+      <div class="photo-caption">your special day with us (sem 2)<div class="photo-year">2024</div></div>
+    </div>
+    <div class="photo-card reveal" style="transition-delay:0.2s">
+      <img src="Phone Link/3.jpg" alt="Trip or special moment">
+      <div class="photo-caption"><div class="photo-year">2024</div>Diwali day (sem 3)</div>
+    </div>
+    <div class="photo-card reveal" style="transition-delay:0.3s">
+      <img src="Phone Link/4.jpg" alt="Funny memory">
+      <div class="photo-caption">Trip to Hyderabad (sem 4)<div class="photo-year">2025</div></div>
+    </div>
+    <div class="photo-card reveal" style="transition-delay:0.15s">
+      <img src="Phone Link/5.jpg" alt="Best day">
+      <div class="photo-caption"><div class="photo-year">2025</div>One more Diwali celebration together (sem 5)</div>
+    </div>
+    <div class="photo-card reveal" style="transition-delay:0.25s">
+      <img src="Phone Link/6.jpg" alt="Meaningful memory">
+      <div class="photo-caption"><div class="photo-year">2026</div>Finally trip to goa ,after many backlashes (sem 6) </div>
+    </div>
+  </div>
+  <!-- Hidden secret button -->
+  <p style="margin-top:2rem;color:rgba(255,255,255,0.3);font-size:0.85rem">Look carefully... <button class="secret-btn" onclick="openSecret('secret1')"></button></p>
+</section>
+
+<!-- TIMELINE -->
+<div id="timeline">
+  <div style="max-width:900px;margin:0 auto;padding:0 2rem">
+    <p class="section-label reveal">📅 Our Story</p>
+    <h2 class="section-title reveal">The <em>Journey</em> So Far</h2>
+    <div class="section-divider reveal"></div>
+  </div>
+  <div class="timeline-wrap" style="max-width:900px;margin:0 auto">
+    <div class="timeline-line"></div>
+    <!-- Replace all timeline content with real memories -->
+    <div class="timeline-item reveal">
+      <div class="timeline-dot"></div>
+      <div class="timeline-card">
+        <div class="timeline-emoji">🌱</div>
+        <div class="timeline-year">2023 — Year 1</div>
+        <h3>The Beginning</h3>
+        <p>This is where it all started. Thanks to SRM university for making this possible</p>
+      </div>
+    </div>
+    <div class="timeline-item reveal">
+      <div class="timeline-dot"></div>
+      <div class="timeline-card">
+        <div class="timeline-emoji">🔥</div>
+        <div class="timeline-year">2024 — Year 2</div>
+        <h3>That Epic Adventure</h3>
+        <p> 2nd sem was full of enjoyment and fun filled with trips and outings, then came 3rd sem  which thrown you in different section😢</p>
+      </div>
+    </div>
+    <div class="timeline-item reveal">
+      <div class="timeline-dot"></div>
+      <div class="timeline-card">
+        <div class="timeline-emoji">💪</div>
+        <div class="timeline-year">2025 — Year 3</div>
+        <h3>Through the Hard Times</h3>
+        <p> Year of hard times, but never feel you are left out. We will be there for you no matter what .</p>
+      </div>
+    </div>
+    <div class="timeline-item reveal">
+      <div class="timeline-dot"></div>
+      <div class="timeline-card">
+        <div class="timeline-emoji">🌟</div>
+        <div class="timeline-year">Now</div>
+        <h3>Still Going Strong</h3>
+        <p>And here we are today — celebrating you, this friendship, and every memory we haven't made yet. ❤️</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MEMES & FUN -->
+<section id="fun">
+  <p class="section-label reveal">😂 The Chaos Archives</p>
+  <h2 class="section-title reveal"><em>Embarrassing</em> Hall of Fame</h2>
+  <div class="section-divider reveal"></div>
+  <div class="meme-grid">
+    <!-- Replace with actual inside jokes / funny moments / meme captions -->
+    <div class="meme-card reveal">
+      <div class="meme-emoji">🙈</div>
+      <div class="meme-text">I would say no embarassment can match the holi days🤣</div>
+    </div>
+    <div class="meme-card reveal" style="transition-delay:0.1s">
+      <div class="meme-emoji">💀</div>
+      <div class="meme-text">the most dangerous trauma you faced ,at waterfalls trek 😶‍🌫️</div>
+    </div>
+    <div class="meme-card reveal" style="transition-delay:0.2s">
+      <div class="meme-emoji">🎭</div>
+      <div class="meme-text">The iconic phrase that you always say "poda makri".</div>
+    </div>
+    <div class="meme-card reveal" style="transition-delay:0.3s" onclick="openSecret('secret2')">
+      <div class="meme-emoji">🔍</div>
+      <div class="meme-text">This one's a secret. Click to see what's hidden here... 👀</div>
+    </div>
+  </div>
+</section>
+
+<!-- FUNNY PHOTOS -->
+<section id="funny-photos">
+  <p class="section-label reveal">🤪 The Derp Corner</p>
+  <h2 class="section-title reveal">Our <em>Funniest</em> & Most Chaotic Photos</h2>
+  <div class="section-divider reveal"></div>
+  
+  <div class="funny-gallery-grid">
+    <!-- Polaroid 1 -->
+    <div class="funny-photo-card reveal">
+      <div class="funny-photo-tape"></div>
+      <img src="Phone Link/funny1.jpg" alt="Funny memory 1" onerror="this.src='https://images.unsplash.com/photo-1531747118685-ca8fa6e08806?auto=format&fit=crop&w=400&q=80'">
+      <div class="funny-photo-caption">paavam face , but noy paavam 😜</div>
+    </div>
+    <!-- Polaroid 2 -->
+    <div class="funny-photo-card reveal" style="transition-delay:0.1s">
+      <div class="funny-photo-tape"></div>
+      <img src="Phone Link/funny2.jpg" alt="Funny memory 2" onerror="this.src='https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=400&q=80'">
+      <div class="funny-photo-caption">kam samajtha hai kya, Maara jaayega 👊</div>
+    </div>
+    <!-- Polaroid 3 -->
+    <div class="funny-photo-card reveal" style="transition-delay:0.2s">
+      <div class="funny-photo-tape"></div>
+      <img src="Phone Link/funny3.jpg" alt="Funny memory 3" onerror="this.src='https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=400&q=80'">
+      <div class="funny-photo-caption">Sleepy mode activated 😴</div>
+    </div>
+    <!-- Polaroid 4 -->
+    <div class="funny-photo-card reveal" style="transition-delay:0.1s">
+      <div class="funny-photo-tape"></div>
+      <img src="Phone Link/funny4.jpg" alt="Funny memory 4" onerror="this.src='https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=400&q=80'">
+      <div class="funny-photo-caption">After an national level sprint 😩</div>
+    </div>
+    <!-- Polaroid 5 -->
+    <div class="funny-photo-card reveal" style="transition-delay:0.2s">
+      <div class="funny-photo-tape"></div>
+      <img src="Phone Link/funny5.jpg" alt="Funny memory 5" onerror="this.src='https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=400&q=80'">
+      <div class="funny-photo-caption">The legendary Holi cleanup operation 🧼👻</div>
+    </div>
+    <!-- Polaroid 6 -->
+    <div class="funny-photo-card reveal" style="transition-delay:0.3s">
+      <div class="funny-photo-tape"></div>
+      <img src="Phone Link/funny6.jpg" alt="Funny memory 6" onerror="this.src='https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?auto=format&fit=crop&w=400&q=80'">
+      <div class="funny-photo-caption">Completely cluless 😵‍💫</div>
+    </div>
+  </div>
+</section>
+
+<!-- QUIZ -->
+<section id="quiz" style="padding:0;margin:3rem 2rem">
+  <div style="max-width:1100px;margin:0 auto;padding:0 0 3rem">
+    <p class="section-label reveal" style="margin-bottom:0.5rem">🧠 Quiz Time</p>
+    <h2 class="section-title reveal">How well do you know <em>us?</em></h2>
+    <div class="section-divider reveal"></div>
+  </div>
+  <div style="max-width:600px;margin:0 auto">
+    <div class="quiz-score reveal">
+      <span style="font-size:0.85rem;color:rgba(255,255,255,0.5)" id="quizProgress">Question 1 of 5</span>
+      <div class="score-bar"><div class="score-fill" id="scoreFill" style="width:0%"></div></div>
+      <span style="font-size:0.85rem;color:var(--gold)" id="scoreNum">0/5</span>
+    </div>
+    <div id="quizArea">
+      <p class="quiz-q reveal" id="quizQ">Loading question...</p>
+      <div class="quiz-opts" id="quizOpts"></div>
+      <div class="quiz-msg" id="quizMsg"></div>
+    </div>
+    <button class="btn-primary" id="nextBtn" style="display:none;margin-top:1.5rem" onclick="nextQuestion()">Next →</button>
+  </div>
+</section>
+
+
+<!-- VAULT -->
+<section id="vault">
+  <p class="section-label reveal">🔐 The Secret Vault</p>
+  <h2 class="section-title reveal">Unlock a <em>Hidden</em> Message</h2>
+  <div class="section-divider reveal"></div>
+  <div class="vault-wrap reveal">
+    <div class="vault-icon">🔒</div>
+    <!-- Customize: change the question and answer below in the JS -->
+    <p style="color:rgba(255,255,255,0.7);margin-bottom:0.5rem">Answer this to unlock the vault:</p>
+    <p style="font-family:'Playfair Display',serif;font-size:1.2rem;font-style:italic;margin-bottom:1rem" id="vaultQuestion">"What's the nickname only you call me?"(hint - 7 characters)</p>
+    <input class="vault-input" id="vaultInput" type="text" placeholder="Type your answer...">
+    <div class="vault-err" id="vaultErr">Nope! Try again 😅</div>
+    <button class="vault-btn" onclick="checkVault()">🔓 Unlock</button>
+    <!-- Replace vault message with real heartfelt message -->
+    <div class="vault-msg" id="vaultMsg">
+      🎉 You found it! Here's your secret message:<br><br>
+      <strong>"Okay real talk — you are genuinely one of the best 
+things that happened to me at SRM.
+And I don't say that lightly because SRM also gave me 
+assignment deadlines and 8am classes.
+You are infinitely better than both. 💛"</strong>
+    </div>
+  </div>
+</section>
+
+<!-- COUNTDOWN -->
+<section id="countdown">
+  <p class="section-label reveal" style="text-align:center">⏰ Countdown</p>
+  <h2 class="section-title reveal" style="text-align:center">Until the <em>Celebration!</em></h2>
+  <div class="section-divider reveal" style="margin:0 auto 3rem"></div>
+  <!-- Change TARGET_DATE to actual birthday/party date -->
+  <div class="countdown-grid reveal" id="countdownGrid">
+    <div class="cd-card"><div class="cd-num" id="cdDays">--</div><div class="cd-label">Days</div></div>
+    <div class="cd-card"><div class="cd-num" id="cdHrs">--</div><div class="cd-label">Hours</div></div>
+    <div class="cd-card"><div class="cd-num" id="cdMins">--</div><div class="cd-label">Minutes</div></div>
+    <div class="cd-card"><div class="cd-num" id="cdSecs">--</div><div class="cd-label">Seconds</div></div>
+  </div>
+  <p style="text-align:center;margin-top:1.5rem;color:rgba(255,255,255,0.4);font-size:0.85rem"></p>
+</section>
+
+<!-- COMPLIMENTS -->
+<section id="compliments">
+  <p class="section-label reveal">💝 Appreciation Station</p>
+  <h2 class="section-title reveal">Reasons You're <em>Awesome</em></h2>
+  <div class="section-divider reveal"></div>
+  <div class="compliment-box reveal">
+    <div class="compliment-text" id="complimentText">"You are one in a billion."</div>
+    <div class="compliment-sub" id="complimentSub">— and that's not even the best part</div>
+    <button class="btn-compliment" onclick="newCompliment()" style="margin-top: 1.5rem;">Show Another Reason ✨</button>
+  </div>
+</section>
+
+<!-- LETTER -->
+<section id="letter" style="padding:0;margin:3rem 2rem">
+  <div style="max-width:1100px;margin:0 auto 3rem;padding:0">
+    <p class="section-label reveal" style="margin-bottom:0.5rem">💌 From the Heart</p>
+    <h2 class="section-title reveal">A Letter <em>For You</em></h2>
+    <div class="section-divider reveal"></div>
+  </div>
+  <!-- Replace this entire letter with your real words -->
+  <div class="letter-text reveal">
+    <p>Dear Nimisha,</p><br>
+    <p>I don't even know how to start this, so I'll just be honest — which, knowing me, you probably didn't expect.</p><br>
+    <p>We met in class. Nothing dramatic, nothing cinematic. Just two people in the same room, probably staring at a board neither of us fully understood. And somehow, out of all the people in that room — it was you.</p><br>
+    <p>My first impression of you? Honestly... I didn't know what to make of you. But I kept coming back to annoy you anyway. Repeatedly. Professionally, even. And the fact that you didn't block me or walk away — that told me everything I needed to know about the kind of person you are.</p><br>
+    <p>There's one thing I'll never forget though — and no, it's not the holi incident where we successfully made you disappear like a ghost 😂. It's the quiet moment when you just... massaged my head when I needed it. No drama, no big speech. Just that. And somehow that small thing said more than most people manage in years.</p><br>
+    <p>You have this way of caring about people that you don't even advertise. No announcements. No conditions. You just show up and make things okay — even when you yourself are simultaneously falling down somewhere, having a health crisis, and making it funny without even trying. Nimisha, you are a walking comedy and a warm hug at the same time and I genuinely don't know how you do it.</p><br>
+    <p>I want you to know something I should've said more clearly before — you are never left out. Not from the plans, not from the group, not from any of it. We are always by your side, even when it doesn't feel that way. Always.</p><br>
+    <p>For this year and everything beyond — I just want you to have more of the good stuff. Less of the falling down, more of the standing tall. Less of the health scares, more of the moments that make you laugh until you can't breathe. You deserve a year that matches the energy you give to everyone around you.</p><br>
+    <p>And Nimisha — everything about you is funny, chaotic, genuine, and irreplaceable. Don't change a single weird thing.</p><br>
+    <div class="letter-sig">— Soneesh ❤️</div>
+  </div>
+</section>
+
+<!-- FINALE -->
+<section id="finale" style="max-width:100%">
+  <div style="position:relative;z-index:2">
+    <p class="section-label reveal" style="text-align:center">🎊 Surprise Finale</p>
+    <h1 class="finale-title reveal">Thank You for Being<br>Part of My Life</h1>
+    <p class="finale-sub reveal">Here's to forever and all the memories we haven't made yet ✨</p>
+    <div class="reveal" style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
+      <button class="btn-primary" onclick="launchFireworks()">🎆 Launch Fireworks!</button>
+
+    </div>
+  </div>
+</section>
+
+<script>
+// ==================== CUSTOMIZATION ZONE ====================
+// Edit these variables to personalize the experience
+
+const FRIEND_NAME = "[Nimisha]"; // Replace with actual name
+
+// Quiz questions — replace all with real memories/inside jokes
+const QUIZ = [
+  {
+    q:"What is ur actual name ?",
+    opts:["Dumboo"," Nimisha","Aunty","Lazy Panda"],
+    ans:0,
+    right:"Correct! you got it 🎉",
+    wrong:"Haha nope! I know you can't answer 😂"
+  },
+  {
+    q:"What is Nimisha's biggest personality trait?",
+    opts:["Always late","Always tired","Too kind for this world","Overly dramatic"],
+    ans:1,
+    right:"You know about yourself 😂",
+    wrong:"HAHA! wrong one 🙄"
+  },
+  {
+    q:"How fast does Nimisha reply to texts?",
+    opts:["Instantly, she's always online","Seen. No reply. Ever.","Replies 3 days later like nothing happened ","Only replies with memes"],
+    ans:2,
+    right:"Classic 😂 So you know that!",
+    wrong:"HAHA! wrong one 💀"
+  },
+];
+
+// Vault — change question and acceptable answer (lowercase match)
+const VAULT_ANSWER = "poluuuu"; // Replace with actual answer (e.g., nickname, inside joke)
+// Also update the question displayed above in HTML (id="vaultQuestion")
+
+
+
+
+
+// Countdown — set the birthday/party date
+const TARGET_DATE = new Date("2026-05-23T00:00:00"); // Replace with actual date/time
+
+// Compliments database
+const COMPLIMENTS = [
+  ["You are one in a billion.", "— and that's not even the best part"],
+  ["Your laugh is literally contagious 😂", "— it can brighten up the dullest class"],
+  ["You make every boring day feel like an adventure! 🌟", "— even SRM assignment deadlines!"],
+  ["A walking comedy and a warm hug at the same time.", "— the perfect combination!"],
+  ["You are genuinely one of the best things that happened to me at SRM.", "— and I don't say that lightly ❤️"]
+];
+
+// Secrets database
+const SECRETS = {
+  photo1: {
+    emoji: "📸",
+    title: "First Photo Together!",
+    msg: "Sem 1, back in 2023. Look how innocent we looked back then! Who would've thought this would turn into such an epic and chaotic friendship? 😂"
+  },
+  secret1: {
+    emoji: "🤫",
+    title: "You Found a Secret!",
+    msg: "Hey Nimisha, just a small reminder: you are awesome, incredibly resilient, and we are so lucky to have you. Thanks for always being yourself!"
+  },
+  secret2: {
+    emoji: "🎭",
+    title: "The Ultimate Secret",
+    msg: "Congratulations, you unlocked the super secret meme! Let's hope sem 6 brings even more trips, less health scares, and infinitely more laughter! 🥂"
+  }
+};
+
+// ==================== END CUSTOMIZATION ====================
+
+
+// CURSOR
+const cur=document.getElementById('cur'),curRing=document.getElementById('curRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px'});
+(function ring(){rx+=(mx-rx)*0.12;ry+=(my-ry)*0.12;curRing.style.left=rx+'px';curRing.style.top=ry+'px';requestAnimationFrame(ring)})();
+
+// PARTICLES
+const canvas=document.getElementById('particleCanvas');
+const ctx=canvas.getContext('2d');
+let particles=[];
+function resizeCanvas(){canvas.width=window.innerWidth;canvas.height=window.innerHeight}
+resizeCanvas();
+window.addEventListener('resize',resizeCanvas);
+function createParticle(){
+  return{x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*2+0.5,
+    dx:(Math.random()-0.5)*0.3,dy:(Math.random()-0.5)*0.3,
+    color:['#f5c842','#ff6b9d','#c084fc','#60a5fa','#34d399'][Math.floor(Math.random()*5)],
+    opacity:Math.random()*0.6+0.2}
+}
+for(let i=0;i<120;i++)particles.push(createParticle());
+function animParticles(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  particles.forEach(p=>{
+    p.x+=p.dx;p.y+=p.dy;
+    if(p.x<0)p.x=canvas.width;if(p.x>canvas.width)p.x=0;
+    if(p.y<0)p.y=canvas.height;if(p.y>canvas.height)p.y=0;
+    ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ctx.fillStyle=p.color;ctx.globalAlpha=p.opacity;ctx.fill();
+  });
+  ctx.globalAlpha=1;
+  requestAnimationFrame(animParticles);
+}
+animParticles();
+
+// CONFETTI
+function spawnConfetti(x,y){
+  const colors=['#f5c842','#ff6b9d','#c084fc','#60a5fa','#34d399','#fff'];
+  for(let i=0;i<20;i++){
+    const d=document.createElement('div');
+    d.className='confetti-piece';
+    d.style.cssText=`left:${x+Math.random()*80-40}px;top:${y}px;background:${colors[Math.floor(Math.random()*colors.length)]};transform:rotate(${Math.random()*360}deg);animation-duration:${2+Math.random()*3}s;animation-delay:${Math.random()*0.5}s;border-radius:${Math.random()>0.5?'50%':'2px'}`;
+    document.body.appendChild(d);
+    setTimeout(()=>d.remove(),5000);
+  }
+}
+document.getElementById('hero').addEventListener('click',e=>spawnConfetti(e.clientX,e.clientY));
+
+// SCROLL REVEAL
+const reveals=document.querySelectorAll('.reveal');
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');io.unobserve(e.target)}})
+},{threshold:0.12});
+reveals.forEach(r=>io.observe(r));
+
+// QUIZ
+let qIdx=0,score=0;
+function loadQuestion(){
+  const q=QUIZ[qIdx];
+  document.getElementById('quizQ').textContent=q.q;
+  document.getElementById('quizProgress').textContent=`Question ${qIdx+1} of ${QUIZ.length}`;
+  document.getElementById('quizMsg').textContent='';
+  document.getElementById('nextBtn').style.display='none';
+  const opts=document.getElementById('quizOpts');
+  opts.innerHTML='';
+  q.opts.forEach((o,i)=>{
+    const btn=document.createElement('button');
+    btn.className='quiz-opt';
+    btn.textContent=o;
+    btn.onclick=()=>answerQ(i,btn);
+    opts.appendChild(btn);
+  });
+}
+function answerQ(i,btn){
+  const q=QUIZ[qIdx];
+  document.querySelectorAll('.quiz-opt').forEach(b=>b.onclick=null);
+  if(i===q.ans){score++;btn.classList.add('correct');document.getElementById('quizMsg').textContent=q.right;spawnConfetti(window.innerWidth/2,window.innerHeight/2)}
+  else{btn.classList.add('wrong');document.querySelectorAll('.quiz-opt')[q.ans].classList.add('correct');document.getElementById('quizMsg').textContent=q.wrong}
+  document.getElementById('scoreFill').style.width=(score/QUIZ.length*100)+'%';
+  document.getElementById('scoreNum').textContent=score+'/'+QUIZ.length;
+  document.getElementById('nextBtn').style.display='block';
+}
+function nextQuestion(){
+  qIdx++;
+  if(qIdx<QUIZ.length){loadQuestion()}
+  else{
+    document.getElementById('quizArea').innerHTML=`<div style="text-align:center;padding:2rem"><div style="font-size:3rem;margin-bottom:1rem">${score>=4?'🎉':'💛'}</div><h3 style="font-family:'Playfair Display',serif;font-size:1.8rem;margin-bottom:1rem">You scored ${score}/${QUIZ.length}!</h3><p style="color:rgba(255,255,255,0.7)">${score===5?'Perfect score! You know everything about us 😭❤️':score>=3?'Not bad! You definitely know the important stuff 💛':'We need to make more memories clearly 😂'}</p></div>`;
+    document.getElementById('nextBtn').style.display='none';
+  }
+}
+loadQuestion();
+
+
+// VAULT
+function checkVault(){
+  const val=document.getElementById('vaultInput').value.trim().toLowerCase();
+  if(val===VAULT_ANSWER.toLowerCase()||val===VAULT_ANSWER){
+    document.getElementById('vaultMsg').style.display='block';
+    document.getElementById('vaultErr').style.display='none';
+    document.getElementById('vault-icon') && (document.querySelector('.vault-icon').textContent='🔓');
+    spawnConfetti(window.innerWidth/2,window.innerHeight/3);
+  } else {
+    document.getElementById('vaultErr').style.display='block';
+    document.getElementById('vaultInput').style.borderColor='#ff6b9d';
+    setTimeout(()=>document.getElementById('vaultInput').style.borderColor='var(--border)',1000);
+  }
+}
+document.getElementById('vaultInput').addEventListener('keydown',e=>{if(e.key==='Enter')checkVault()});
+
+// COUNTDOWN
+function updateCountdown(){
+  const now=new Date();
+  let diff=TARGET_DATE-now;
+  if(diff<0){
+    document.getElementById('countdownGrid').innerHTML='<div style="grid-column:1/-1;text-align:center;font-family:Playfair Display,serif;font-size:2rem;color:var(--gold)">🎉 The day is here! Happy Birthday! 🎉</div>';
+    return;
+  }
+  const d=Math.floor(diff/86400000);
+  const h=Math.floor((diff%86400000)/3600000);
+  const m=Math.floor((diff%3600000)/60000);
+  const s=Math.floor((diff%60000)/1000);
+  document.getElementById('cdDays').textContent=String(d).padStart(2,'0');
+  document.getElementById('cdHrs').textContent=String(h).padStart(2,'0');
+  document.getElementById('cdMins').textContent=String(m).padStart(2,'0');
+  document.getElementById('cdSecs').textContent=String(s).padStart(2,'0');
+}
+updateCountdown();
+setInterval(updateCountdown,1000);
+
+// COMPLIMENTS
+let lastCompliment=-1;
+function newCompliment(){
+  let idx;
+  do{idx=Math.floor(Math.random()*COMPLIMENTS.length)}while(idx===lastCompliment);
+  lastCompliment=idx;
+  const el=document.getElementById('complimentText');
+  const sub=document.getElementById('complimentSub');
+  el.style.opacity=0;sub.style.opacity=0;
+  setTimeout(()=>{
+    el.textContent='"'+COMPLIMENTS[idx][0]+'"';
+    sub.textContent=COMPLIMENTS[idx][1];
+    el.style.opacity=1;sub.style.opacity=1;
+    el.style.transition='opacity 0.4s';sub.style.transition='opacity 0.4s';
+  },300);
+}
+
+// SECRETS
+function openSecret(key){
+  const s=SECRETS[key];
+  if(!s)return;
+  document.getElementById('popupContent').innerHTML=`<div style="font-size:4rem;margin-bottom:1rem">${s.emoji}</div><h3 style="font-family:'Playfair Display',serif;font-size:1.5rem;margin-bottom:1rem">${s.title}</h3><p style="color:rgba(255,255,255,0.8);line-height:1.7">${s.msg}</p>`;
+  document.getElementById('secretPopup').classList.add('active');
+  document.getElementById('overlay').classList.add('active');
+}
+function closePopup(){
+  document.getElementById('secretPopup').classList.remove('active');
+  document.getElementById('overlay').classList.remove('active');
+}
+
+// FIREWORKS
+function launchFireworks(){
+  const colors=['#f5c842','#ff6b9d','#c084fc','#60a5fa','#34d399'];
+  for(let f=0;f<15;f++){
+    setTimeout(()=>{
+      const x=Math.random()*window.innerWidth;
+      const y=Math.random()*window.innerHeight*0.7;
+      for(let i=0;i<25;i++){
+        const dot=document.createElement('div');
+        const angle=Math.random()*Math.PI*2;
+        const dist=Math.random()*120+30;
+        dot.style.cssText=`position:fixed;width:6px;height:6px;border-radius:50%;background:${colors[Math.floor(Math.random()*colors.length)]};left:${x}px;top:${y}px;z-index:200;pointer-events:none;transition:transform 1.5s cubic-bezier(0.1,1,0.3,1),opacity 1.5s;opacity:1`;
+        document.body.appendChild(dot);
+        requestAnimationFrame(()=>{
+          dot.style.transform=`translate(${Math.cos(angle)*dist}px,${Math.sin(angle)*dist}px)`;
+          dot.style.opacity='0';
+        });
+        setTimeout(()=>dot.remove(),2000);
+      }
+    },f*200);
+  }
+}
+
+// FLOATING NOTES
+function showNotes(){
+  document.getElementById('note1').style.display='block';
+  document.getElementById('note2').style.display='block';
+}
+
+// TYPEWRITER for letter
+function typeWriter(el,text,speed=30){
+  el.textContent='';
+  let i=0;
+  const interval=setInterval(()=>{
+    el.textContent+=text[i];
+    i++;
+    if(i>=text.length)clearInterval(interval);
+  },speed);
+}
+
+// Auto-show floating notes after 5s
+setTimeout(showNotes,5000);
+
+// Intro confetti burst
+setTimeout(()=>{
+  for(let i=0;i<5;i++)setTimeout(()=>spawnConfetti(Math.random()*window.innerWidth,100),i*200);
+},2000);
+</script>
+</body>
+</html>
